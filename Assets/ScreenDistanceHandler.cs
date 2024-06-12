@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class NewBehaviourScript : MonoBehaviour
+public class ScreenDistanceHandler : MonoBehaviour
 {
     public Camera Camera2Follow;
     public float CameraDistance = 3.0F;

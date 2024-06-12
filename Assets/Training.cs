@@ -21,13 +21,14 @@ public class Training : MonoBehaviour
     public AudioSource BeepSound;
 
     public int numberSamples = 2;
+    public string description = ""; 
     private bool training = false;
     private bool trained = false;
 
     private static Random rng = new Random();
     static List<int> stimuliIdx = new List<int>() { 0, 1, 2, 3 };
 
-    private static int relax_t = 2;
+    private static int relax_t = 4;
     private static int inst_t = 2;
     private static int stimuli_t = 5;
 
@@ -43,9 +44,10 @@ public class Training : MonoBehaviour
             arrows[i].SetActive(false);
         }
 
-        myText.text = "Press button (A) to Start the trainig!";
-        OVRManager.display.displayFrequency = 120.0f;
-        OVRPlugin.systemDisplayFrequency = 120.0f;
+        myText.text = $"Press button (A) to Start the trainig!\n{description}";
+        //OVRManager.display.displayFrequency = 120.0f;
+        //OVRPlugin.systemDisplayFrequency = 120.0f;
+
     }
 
     // Update is called once per frame
@@ -80,9 +82,9 @@ public class Training : MonoBehaviour
 
     IEnumerator MySequence()
     {
-        logger = new CsvLog("NetflixOff");
+        logger = new CsvLog(description);
         logger.writeLine("start");
-        myText.text = "Start training!"; // Test 
+        myText.text = $"Start training! {description}" ; // Test 
         yield return new WaitForSeconds(5);
         BeepSound.Play();
 
@@ -123,7 +125,9 @@ public class Training : MonoBehaviour
         logger.writeLine(idx);
 
         yield return new WaitForSeconds(stimuli_t);
+
         //Stop Flickering
+        BeepSound.Play();
         stimulis[idx].GetComponent<PogressBar>().buttonState = ButtonState.Idle;
         arrows[idx].SetActive(false);
         //setButtonsState(ButtonState.Inactive);
