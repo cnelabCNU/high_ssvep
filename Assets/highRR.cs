@@ -9,6 +9,7 @@ public class highRR : MonoBehaviour
     {
         OVRManager.display.displayFrequency = 90.0f;
         OVRPlugin.systemDisplayFrequency = 90.0f;
+   
 
     }
 

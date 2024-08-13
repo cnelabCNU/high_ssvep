@@ -31,9 +31,9 @@ public class offlineNetflix : MonoBehaviour
     private List<int> stimuliIdx;
     string[] filePaths;
 
-    private static int relax_t = 2;
+    private static int relax_t = 4;
     private static int inst_t = 3;
-    private static int stimuli_t = 6;
+    private static int stimuli_t = 5;
 
     CsvLog logger;
 
@@ -117,7 +117,7 @@ public class offlineNetflix : MonoBehaviour
 
         logger.writeLine("restingCE");
         myText.text = "Close Eyes!";
-        yield return new WaitForSeconds(5);
+        yield return new WaitForSeconds(30);
         BeepSound.Play();
 
         for (var j = 0; j < numberSamples; j++)
@@ -153,8 +153,10 @@ public class offlineNetflix : MonoBehaviour
         //BeepSound.Play();
         //Start Flickering
         myText.text = "";
+        float f_label = stimulis[idx].GetComponent<PogressBar>().Frequency; 
         stimuli_reference.SetActive(false);
         activateStimuli(true);
+        logger.writeLine(string.Format("start_{0}", idx));
 
         while (!Input.GetKeyDown("a") && !OVRInput.GetDown(OVRInput.Button.One))
         {
