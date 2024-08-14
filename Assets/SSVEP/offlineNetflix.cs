@@ -91,8 +91,8 @@ public class offlineNetflix : MonoBehaviour
         }
         if (trained && (OVRInput.GetDown(OVRInput.Button.One) || Input.GetKeyDown("a")))
         {
-            logger.saveFile();
-            myText.text = "Saved!\nPress button (A) to restart the trainig!";
+            
+            myText.text = "Press button (A) to restart the trainig!";
             trained = false;
         }
     }
@@ -117,7 +117,7 @@ public class offlineNetflix : MonoBehaviour
 
         logger.writeLine("restingCE");
         myText.text = "Close Eyes!";
-        yield return new WaitForSeconds(5);
+        yield return new WaitForSeconds(30);
         BeepSound.Play();
 
         for (var j = 0; j < numberSamples; j++)
@@ -130,7 +130,8 @@ public class offlineNetflix : MonoBehaviour
                 //yield return new WaitForSeconds(relax_t + inst_t + stimuli_t);
             }
         }
-        myText.text = "****Train Finnished!****\nPress (A) to save session";
+        myText.text = "****Train Finnished!****\nPress (A) to start again";
+        logger.saveFile();
         training = false;
         trained = true;
     }
