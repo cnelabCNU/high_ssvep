@@ -117,7 +117,7 @@ public class offlineNetflix : MonoBehaviour
 
         logger.writeLine("restingCE");
         myText.text = "Close Eyes!";
-        yield return new WaitForSeconds(30);
+        yield return new WaitForSeconds(5);
         BeepSound.Play();
 
         for (var j = 0; j < numberSamples; j++)
