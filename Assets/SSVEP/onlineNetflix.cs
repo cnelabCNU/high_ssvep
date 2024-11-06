@@ -50,7 +50,7 @@ public class onlineNetflix : MonoBehaviour
 
         for (var i = 0; i < stimulis.Length; i++)
         {
-            freq_stimuliidx.Add($"{stimulis[i].GetComponent<PogressBar>().Frequency}", stimulis[i].GetComponent<PogressBar>());
+            freq_stimuliidx.Add($"{stimulis[i].GetComponent<PogressBar>().Frequency:0.0}", stimulis[i].GetComponent<PogressBar>());
            
         }
 
