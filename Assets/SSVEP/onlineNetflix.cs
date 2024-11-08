@@ -18,9 +18,9 @@ public class onlineNetflix : MonoBehaviour
 {
     public GameObject[] stimulis;
     public GameObject stimuli_reference;
-    public Dictionary<String, PogressBar> freq_stimuliidx = new Dictionary<String, PogressBar>();
-    public int stimuli_trigger = -1; 
+    public Dictionary<String, int> freq_stimuliidx = new Dictionary<String, int>();
 
+    public BackendController backendController; 
     public TextMeshProUGUI myText;
     public AudioSource BeepSound;
 
@@ -28,6 +28,7 @@ public class onlineNetflix : MonoBehaviour
     public string description = ""; 
     private bool training = false;
     private bool trained = false;
+    public bool isStimuliActive = false;
 
     private static Random rng = new Random();
     private List<int> stimuliIdx;
@@ -35,7 +36,7 @@ public class onlineNetflix : MonoBehaviour
 
     private static int relax_t = 4;
     private static int inst_t = 3;
-    private static int stimuli_t = 5;
+    private static int stimuli_t = 2;
 
     CsvLog logger;
 
@@ -45,18 +46,19 @@ public class onlineNetflix : MonoBehaviour
         filePaths = Directory.GetFiles(Path.Combine(Application.persistentDataPath, "netflix_posters"), "*.jpg",
                                          SearchOption.TopDirectoryOnly);
         stimuliIdx = Enumerable.Range(0, stimulis.Length).ToList();
-        Debug.Log(stimulis[0].GetComponent<PogressBar>().Frequency);
-        Debug.Log(stimulis[0].GetComponent<PogressBar>().buttonState);
+        Debug.Log(Application.persistentDataPath);
+        //Debug.Log(stimulis[0].GetComponent<PogressBar>().Frequency);
+        //Debug.Log(stimulis[0].GetComponent<PogressBar>().buttonState);
 
         for (var i = 0; i < stimulis.Length; i++)
         {
-            freq_stimuliidx.Add($"{stimulis[i].GetComponent<PogressBar>().Frequency:0.0}", stimulis[i].GetComponent<PogressBar>());
+            freq_stimuliidx.Add($"{stimulis[i].GetComponent<PogressBar>().Frequency:0.0}", i);
            
         }
 
         stimuli_reference.SetActive(false);
         getRandomImages();
-        activateStimuli(true);
+        activateStimuli(false);
 
         myText.text = $"Press button (A) to Start the trainig!\n{description}";
         //OVRManager.display.displayFrequency = 120.0f;
@@ -75,6 +77,8 @@ public class onlineNetflix : MonoBehaviour
 
     void activateStimuli(bool flag)
     {
+        isStimuliActive = flag;
+        setButtonsState(ButtonState.Idle);
         for (var i = 0; i < stimulis.Length; i++)
         {
             stimulis[i].SetActive(flag);
@@ -125,7 +129,7 @@ public class onlineNetflix : MonoBehaviour
 
         logger.writeLine("restingCE");
         myText.text = "Close Eyes!";
-        yield return new WaitForSeconds(30);
+        yield return new WaitForSeconds(5);
         BeepSound.Play();
 
         for (var j = 0; j < numberSamples; j++)
@@ -161,21 +165,47 @@ public class onlineNetflix : MonoBehaviour
 
         //BeepSound.Play();
         //Start Flickering
-        myText.text = "";
-        float f_label = stimulis[idx].GetComponent<PogressBar>().Frequency; 
+        myText.text = ""; 
         stimuli_reference.SetActive(false);
-        activateStimuli(true);
-        logger.writeLine(string.Format("start_{0}", idx));
 
-        while (!Input.GetKeyDown("a") && !OVRInput.GetDown(OVRInput.Button.One))
+        activateStimuli(true);
+        logger.writeColumn(string.Format("start_{0}", idx));
+
+        //while (!Input.GetKeyDown("a") && !OVRInput.GetDown(OVRInput.Button.One))
+        bool stimuliFlag = true; 
+        while (stimuliFlag)  // Wait until trigger 
         {
+            switch (backendController.buttonState)
+            {
+                case ButtonState.Inactive:
+                    backendController.buttonState = ButtonState.Idle;
+                    backendController.isStimuliActive = true;
+                    break;
+                case ButtonState.Hover:
+                    stimulis[freq_stimuliidx[backendController.stimuliFrequency]].GetComponent<PogressBar>().buttonState = ButtonState.Hover; 
+                    break;
+                case ButtonState.Cancel:
+                    stimulis[freq_stimuliidx[backendController.stimuliFrequency]].GetComponent<PogressBar>().buttonState = ButtonState.Idle;
+                    backendController.buttonState = ButtonState.Idle;
+                    break;
+                case ButtonState.Selection:
+                    stimuliFlag = false;
+                    backendController.isStimuliActive = false;
+                    backendController.buttonState = ButtonState.Inactive;
+                    stimulis[freq_stimuliidx[backendController.stimuliFrequency]].GetComponent<PogressBar>().buttonState = ButtonState.Selection;
+                    break; 
+            }
             yield return new WaitForSeconds(0.001f);
         }
+
         BeepSound.Play();
-        logger.writeLine(idx);
+
+        float target_label = stimulis[idx].GetComponent<PogressBar>().Frequency;
+        float stimuli_label = stimulis[freq_stimuliidx[backendController.stimuliFrequency]].GetComponent<PogressBar>().Frequency;
+
+        logger.writeLine($"{target_label:0.0},{stimuli_label:0.0}");
 
         yield return new WaitForSeconds(stimuli_t);
-
         //Stop Flickering
         activateStimuli(false);
         BeepSound.Play();

@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 [ExecuteInEditMode()]
-public enum ButtonState { Inactive, Idle, Hover, Selection, SelectionIdle };
+public enum ButtonState { Inactive, Idle, Hover, Selection, SelectionIdle, Cancel };
 
 public class PogressBar : MonoBehaviour
 {

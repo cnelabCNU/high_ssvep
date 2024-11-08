@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading;
 using Newtonsoft.Json;
 
-public class TCPClient : MonoBehaviour
+public class BackendController : MonoBehaviour
 {
     private TcpClient socketConnection;
     private Thread clientReceiveThread;
@@ -16,7 +16,9 @@ public class TCPClient : MonoBehaviour
     public string serverIP = "127.0.0.1";
     public int serverPort = 887;
 
-    public onlineNetflix online_netflix;
+    public ButtonState buttonState = ButtonState.Inactive;
+    public string stimuliFrequency = "";
+    public bool isStimuliActive = false; 
 
     // Connection state enum
     public enum ConnectionState
@@ -119,28 +121,31 @@ public class TCPClient : MonoBehaviour
         //   {
         try
         {
-            // Example: Deserialize JSON to a dictionary
-            var data = JsonConvert.DeserializeObject<Dictionary<string, string>>(jsonData);
-            // Process your data here
-            Debug.Log($"Received data: {data["Action"]}");
-            PogressBar progressBar = online_netflix.freq_stimuliidx[data["Frequency"]];
-
-
-            if (data["Action"] == "Hover")
+            if (isStimuliActive)
             {
-                progressBar.buttonState = ButtonState.Hover;
+                // Example: Deserialize JSON to a dictionary
+                var data = JsonConvert.DeserializeObject<Dictionary<string, string>>(jsonData);
+                // Process your data here
+                Debug.Log($"Received data: {data["Action"]}");
+                //PogressBar progressBar = online_design.freq_stimuliidx[data["Frequency"]];
 
-                Debug.Log($"Button index: {progressBar.buttonState}");
+                if (data["Action"] == "Hover" && buttonState == ButtonState.Idle)
+                {
+                    buttonState = ButtonState.Hover;
+                    stimuliFrequency = data["Frequency"]; 
 
-            }
-            else if (data["Action"] == "Cancel")
-            {
-                progressBar.buttonState = ButtonState.Idle;
-
-                Debug.Log($"Button index: {progressBar.buttonState}");
-
-            }
                 }
+                else if (data["Action"] == "Cancel" && buttonState == ButtonState.Hover)
+                {
+                    buttonState = ButtonState.Cancel;
+
+                }
+                else if (data["Action"] == "Selection" && buttonState == ButtonState.Hover)
+                {
+                    buttonState = ButtonState.Selection;
+                }
+            }
+                    }
         catch (Exception e)
         {
             Debug.LogError($"Error processing JSON data: {e.Message}");

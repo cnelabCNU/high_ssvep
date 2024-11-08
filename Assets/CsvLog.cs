@@ -29,6 +29,13 @@ namespace csvlog
             content += line;
         }
 
+        public void writeColumn(object str)
+        {
+            var line = string.Format("{0},{1},", str, GetTimestamp(System.DateTime.Now));
+            Debug.Log(line);
+            content += line;
+        }
+
         public void saveFile()
         {
             Debug.Log("Save file in: " + path);

@@ -30,6 +30,7 @@ Library: D:\CNELAB\My project (6)\Temp\BurstOutput\tempburstlibs\arm64-v8a\lib_b
 --assembly-defines=Meta.XR.BuildingBlocks;
 --assembly-defines=Mono.Security;
 --assembly-defines=mscorlib;
+--assembly-defines=Newtonsoft.Json;
 --assembly-defines=Oculus.AudioManager;
 --assembly-defines=Oculus.Interaction;
 --assembly-defines=Oculus.Interaction.OVR;
@@ -40,9 +41,12 @@ Library: D:\CNELAB\My project (6)\Temp\BurstOutput\tempburstlibs\arm64-v8a\lib_b
 --assembly-defines=Oculus.VR;
 --assembly-defines=System.Configuration;
 --assembly-defines=System.Core;
+--assembly-defines=System.Data;
 --assembly-defines=System;
 --assembly-defines=System.Numerics;
+--assembly-defines=System.Runtime.Serialization;
 --assembly-defines=System.Xml;
+--assembly-defines=System.Xml.Linq;
 --assembly-defines=Unity.Burst;
 --assembly-defines=Unity.Burst.Unsafe;
 --assembly-defines=Unity.Mathematics;
@@ -94,6 +98,7 @@ Library: D:\CNELAB\My project (6)\Temp\BurstOutput\tempburstlibs\arm64-v8a\lib_b
 --assembly-defines=Meta.XR.BuildingBlocks;
 --assembly-defines=Mono.Security;
 --assembly-defines=mscorlib;
+--assembly-defines=Newtonsoft.Json;
 --assembly-defines=Oculus.AudioManager;
 --assembly-defines=Oculus.Interaction;
 --assembly-defines=Oculus.Interaction.OVR;
@@ -104,9 +109,12 @@ Library: D:\CNELAB\My project (6)\Temp\BurstOutput\tempburstlibs\arm64-v8a\lib_b
 --assembly-defines=Oculus.VR;
 --assembly-defines=System.Configuration;
 --assembly-defines=System.Core;
+--assembly-defines=System.Data;
 --assembly-defines=System;
 --assembly-defines=System.Numerics;
+--assembly-defines=System.Runtime.Serialization;
 --assembly-defines=System.Xml;
+--assembly-defines=System.Xml.Linq;
 --assembly-defines=Unity.Burst;
 --assembly-defines=Unity.Burst.Unsafe;
 --assembly-defines=Unity.Mathematics;
