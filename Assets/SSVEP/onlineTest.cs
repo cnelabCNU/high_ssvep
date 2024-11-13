@@ -38,6 +38,8 @@ public class OnlineTest : MonoBehaviour
     private static int inst_t = 3;
     private static int stimuli_t = 2;
 
+    private bool beingHandled = false;
+
     CsvLog logger;
 
     // Start is called before the first frame update
@@ -88,28 +90,42 @@ public class OnlineTest : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if ( /*some case  */ !beingHandled)
+        {
+            StartCoroutine(HandleIt());
+        }
+    }
+
+    private IEnumerator HandleIt()
+    {
+        beingHandled = true;
         switch (backendController.buttonState)
         {
             case ButtonState.Inactive:
+                yield return new WaitForSeconds(2.0f);
                 backendController.buttonState = ButtonState.Idle;
+                break;
+            case ButtonState.Idle:
                 backendController.isStimuliActive = true;
+                activateStimuli(true);
                 break;
             case ButtonState.Hover:
                 stimulis[freq_stimuliidx[backendController.stimuliFrequency]].GetComponent<PogressBar>().buttonState = ButtonState.Hover;
                 break;
             case ButtonState.Cancel:
-                stimulis[freq_stimuliidx[backendController.stimuliFrequency]].GetComponent<PogressBar>().buttonState = ButtonState.Idle;
-                backendController.buttonState = ButtonState.Idle;
+                stimulis[freq_stimuliidx[backendController.stimuliFrequency]].GetComponent<PogressBar>().buttonState = ButtonState.Cancel;
+                backendController.buttonState = ButtonState.Inactive;
                 break;
             case ButtonState.Selection:
                 //stimuliFlag = false;
                 backendController.isStimuliActive = false;
-                backendController.buttonState = ButtonState.Inactive;
                 stimulis[freq_stimuliidx[backendController.stimuliFrequency]].GetComponent<PogressBar>().buttonState = ButtonState.Selection;
                 //setButtonsState(ButtonState.Idle);
+                backendController.buttonState = ButtonState.Inactive;
+
                 break;
         }
-        
+        beingHandled = false;
     }
 
     public void setButtonsState(ButtonState buttonState)
@@ -135,4 +151,6 @@ public class OnlineTest : MonoBehaviour
         }
         return tex;
     }
+
+
 }

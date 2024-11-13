@@ -66,13 +66,31 @@ public class onlineNetflix : MonoBehaviour
 
     }
 
-    void getRandomImages()
+    void getRandomImages(bool spotDifference = false)
     {
         var shuffledIdx = filePaths.OrderBy(a => rng.Next()).ToList();
         for (var i = 0; i < stimulis.Length; i++)
         {
             stimulis[i].GetComponent<RawImage>().texture = LoadImage(shuffledIdx[i]);
         }
+    }
+
+    void getSpotDifference(int stimuliId )
+    {
+        int flipIdx;
+        do
+        {
+            flipIdx = UnityEngine.Random.Range(0, stimulis.Length);
+        } while (flipIdx == stimuliId);
+
+        int colorRemoveIdx;
+        do
+        {
+            colorRemoveIdx = UnityEngine.Random.Range(0, stimulis.Length);
+        } while (colorRemoveIdx == stimuliId || colorRemoveIdx == flipIdx);
+
+        stimulis[flipIdx].GetComponent<RawImage>().texture = FlipTextureHorizontally(stimulis[stimuliId].GetComponent<RawImage>().texture as Texture2D);
+        stimulis[colorRemoveIdx].GetComponent<RawImage>().texture = RemoveRandomColorChannel(stimulis[stimuliId].GetComponent<RawImage>().texture as Texture2D);
     }
 
     void activateStimuli(bool flag)
@@ -151,6 +169,7 @@ public class onlineNetflix : MonoBehaviour
     IEnumerator StimuliSequence(int idx, int sample)
     {
         getRandomImages();
+        getSpotDifference(idx);
         logger.writeLine("relax");
         myText.text = string.Format("Relax\n{0} / {1} Epoch", sample + 1, numberSamples);
         yield return new WaitForSeconds(relax_t);
@@ -178,21 +197,25 @@ public class onlineNetflix : MonoBehaviour
             switch (backendController.buttonState)
             {
                 case ButtonState.Inactive:
+                    yield return new WaitForSeconds(2.0f);
                     backendController.buttonState = ButtonState.Idle;
+                    break;
+                case ButtonState.Idle:
                     backendController.isStimuliActive = true;
+                    activateStimuli(true);
                     break;
                 case ButtonState.Hover:
                     stimulis[freq_stimuliidx[backendController.stimuliFrequency]].GetComponent<PogressBar>().buttonState = ButtonState.Hover; 
                     break;
                 case ButtonState.Cancel:
-                    stimulis[freq_stimuliidx[backendController.stimuliFrequency]].GetComponent<PogressBar>().buttonState = ButtonState.Idle;
+                    stimulis[freq_stimuliidx[backendController.stimuliFrequency]].GetComponent<PogressBar>().buttonState = ButtonState.Cancel;
                     backendController.buttonState = ButtonState.Idle;
                     break;
                 case ButtonState.Selection:
                     stimuliFlag = false;
                     backendController.isStimuliActive = false;
-                    backendController.buttonState = ButtonState.Inactive;
                     stimulis[freq_stimuliidx[backendController.stimuliFrequency]].GetComponent<PogressBar>().buttonState = ButtonState.Selection;
+                    backendController.buttonState = ButtonState.Inactive;
                     break; 
             }
             yield return new WaitForSeconds(0.001f);
@@ -225,4 +248,52 @@ public class onlineNetflix : MonoBehaviour
         }
         return tex;
     }
+
+    public static Texture2D FlipTextureHorizontally(Texture2D original)
+    {
+        Texture2D flipped = new Texture2D(original.width, original.height);
+        for (int y = 0; y < original.height; y++)
+        {
+            for (int x = 0; x < original.width; x++)
+            {
+                flipped.SetPixel(x, y, original.GetPixel(original.width - x - 1, y));
+            }
+        }
+        flipped.Apply();
+        return flipped;
+    }
+
+    public static Texture2D RemoveRandomColorChannel(Texture2D original)
+    {
+        // Clone the original texture to avoid modifying it directly
+        Texture2D modified = new Texture2D(original.width, original.height);
+        Color[] pixels = original.GetPixels();
+
+        // Randomly choose which channel to remove: 0 = Red, 1 = Green, 2 = Blue
+        int channelToRemove = UnityEngine.Random.Range(0, 3);
+
+        for (int i = 0; i < pixels.Length; i++)
+        {
+            Color pixel = pixels[i];
+            switch (channelToRemove)
+            {
+                case 0: // Remove Red
+                    pixel.r = 0;
+                    break;
+                case 1: // Remove Green
+                    pixel.g = 0;
+                    break;
+                case 2: // Remove Blue
+                    pixel.b = 0;
+                    break;
+            }
+            pixels[i] = pixel;
+        }
+
+        // Apply the modified pixels back to the new texture
+        modified.SetPixels(pixels);
+        modified.Apply();
+        return modified;
+    }
+
 }

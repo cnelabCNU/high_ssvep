@@ -38,6 +38,7 @@ public class PogressBar : MonoBehaviour
                 imageraw.material.SetInt("_Active", 0);
                 break;
             case ButtonState.Idle:
+                mask.color = new Color(0f, 1f, 1f);
                 current = 0;
                 imageraw.material.SetInt("_Active", 1);
                 break;
@@ -46,10 +47,16 @@ public class PogressBar : MonoBehaviour
                 break;
             case ButtonState.Selection:
                 current = 1;
+                mask.color = new Color(0f, 1f, 0f);
                 imageraw.material.SetInt("_Active", 0);
                 break;
             case ButtonState.SelectionIdle:
                 current = 1;
+                imageraw.material.SetInt("_Active", 1);
+                break;
+            case ButtonState.Cancel:
+                current = 1;
+                mask.color = new Color(1f, 0f, 0f);
                 imageraw.material.SetInt("_Active", 1);
                 break;
         }
