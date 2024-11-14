@@ -29,6 +29,7 @@ public class OnlineMatch : MonoBehaviour
     public AudioSource BeepSound;
 
     public bool isStimuliActive = false;
+    private bool show_start = true; 
 
     //private static Random rng = new Random();
     private List<int> stimuliIdx;
@@ -59,6 +60,7 @@ public class OnlineMatch : MonoBehaviour
         activateStimuli(true);
         pairsFound = 0;
         sequence = new Queue<int>();
+        show_start = true; 
 
         myText.text = $"Press button (A) to Start the trainig!";
         //OVRManager.display.displayFrequency = 120.0f;
@@ -109,13 +111,35 @@ public class OnlineMatch : MonoBehaviour
         }
     }
 
+    void rotateStimulis()
+    {
+        for (var i = 0; i < stimulis.Length; i++)
+        {
+            StartCoroutine(RotateObject(stimulis[i], 1));
+        }
+    }
+
     // Update is called once per frame
     void Update()
     {
-        if ( /*some case  */ !beingHandled)
+        if ((OVRInput.GetDown(OVRInput.Button.One) || Input.GetKeyDown("a")))
+        {
+            show_start = true;
+            StartCoroutine(showstimuliStart());
+        }
+        if ( /*some case  */ !beingHandled )
         {
             StartCoroutine(HandleIt());
         }
+    }
+
+    private IEnumerator showstimuliStart()
+    {
+        Debug.Log("rotate");
+        rotateStimulis();
+        yield return new WaitForSeconds(3);
+        rotateStimulis();
+        show_start = false; 
     }
 
     private IEnumerator HandleIt()
@@ -126,6 +150,24 @@ public class OnlineMatch : MonoBehaviour
             case ButtonState.Inactive:
                 yield return new WaitForSeconds(2.0f);
                 backendController.buttonState = ButtonState.Idle;
+
+                if (sequence.Count >= 2)
+                {
+                    int firstelement = sequence.Dequeue();
+                    int secondelement = sequence.Dequeue();
+                    if (shuffledPairs[firstelement] == shuffledPairs[secondelement])
+                    {
+                        pairsFound += 1;
+                        Debug.Log($"Paris found: {pairsFound}");
+                    }
+                    else
+                    {
+                        StartCoroutine(RotateObject(stimulis[firstelement], 1));
+                        StartCoroutine(RotateObject(stimulis[secondelement], 1));
+                        stimulis[firstelement].GetComponent<PogressBar>().buttonState = ButtonState.Idle;
+                        stimulis[secondelement].GetComponent<PogressBar>().buttonState = ButtonState.Idle;
+                    }
+                }
                 break;
             case ButtonState.Idle:
                 backendController.isStimuliActive = true;
@@ -135,7 +177,7 @@ public class OnlineMatch : MonoBehaviour
                 stimulis[freq_stimuliidx[backendController.stimuliFrequency]].GetComponent<PogressBar>().buttonState = ButtonState.Hover;
                 break;
             case ButtonState.Cancel:
-                stimulis[freq_stimuliidx[backendController.stimuliFrequency]].GetComponent<PogressBar>().buttonState = ButtonState.Cancel;
+                stimulis[freq_stimuliidx[backendController.stimuliFrequency]].GetComponent<PogressBar>().buttonState = ButtonState.Idle;
                 backendController.buttonState = ButtonState.Inactive;
                 break;
             case ButtonState.Selection:
@@ -148,22 +190,7 @@ public class OnlineMatch : MonoBehaviour
                 
                 sequence.Enqueue(freq_stimuliidx[backendController.stimuliFrequency]);
                 StartCoroutine(RotateObject(stimulis[freq_stimuliidx[backendController.stimuliFrequency]], 1));
-                
-                if(sequence.Count >=2)
-                {
-                    int firstelement = sequence.Dequeue();
-                    int secondelement = sequence.Dequeue();
-                    if(shuffledPairs[firstelement] == shuffledPairs[secondelement])
-                    {
-                        pairsFound += 1;
-                        Debug.Log($"Paris found: {pairsFound}");
-                    }
-                    else
-                    {
-                        StartCoroutine(RotateObject(stimulis[firstelement], 1));
-                        StartCoroutine(RotateObject(stimulis[secondelement], 1));
-                    }
-                }
+              
 
                 break;
         }

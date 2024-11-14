@@ -84,7 +84,7 @@ public class OnlineFindDiff : MonoBehaviour
 
     void getRandomImagesGenAI(int idx = 0, int sample = 0)
     {
-        string filepath = filePaths[idx + sample];
+        string filepath = filePaths[idx + sample*numberSamples ];
         string directoryName = Path.GetFileNameWithoutExtension(filepath);
 
         var filePathsGenAI = Directory.GetFiles(Path.Combine(Application.persistentDataPath, "netflix_posters_genai", directoryName), "*.jpg",
@@ -142,6 +142,7 @@ public class OnlineFindDiff : MonoBehaviour
             stimuli_reference.SetActive(false);
             StopCoroutine("MySequence");
             training = false;
+            activateStimuli(false);
         }
         if (trained && (OVRInput.GetDown(OVRInput.Button.One) || Input.GetKeyDown("a")))
         {
@@ -150,11 +151,11 @@ public class OnlineFindDiff : MonoBehaviour
             trained = false;
         }
 
-        if (Input.GetKeyDown("c"))
-        {
-            filePaths = filePaths.OrderBy(a => rng.Next()).ToArray();
-            getRandomImagesGenAI();
-        }
+       // if (Input.GetKeyDown("c"))
+       // {
+        //    filePaths = filePaths.OrderBy(a => rng.Next()).ToArray();
+        //    getRandomImagesGenAI();
+        //}
     }
 
     public void setButtonsState(ButtonState buttonState)
@@ -238,7 +239,7 @@ public class OnlineFindDiff : MonoBehaviour
                     break;
                 case ButtonState.Cancel:
                     stimulis[freq_stimuliidx[backendController.stimuliFrequency]].GetComponent<PogressBar>().buttonState = ButtonState.Cancel;
-                    backendController.buttonState = ButtonState.Idle;
+                    backendController.buttonState = ButtonState.Inactive;
                     break;
                 case ButtonState.Selection:
                     stimuliFlag = false;

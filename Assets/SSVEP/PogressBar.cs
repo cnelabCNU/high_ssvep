@@ -14,9 +14,10 @@ public class PogressBar : MonoBehaviour
     public int minimum; 
     public int maximum;
     public float current;
+    public float progressBarTimelimit = 3.0f; 
     private float timer_hover = 0.0f;
     public Image mask;
-    public float _chargeSpeed = 0.25f;
+    private float _chargeSpeed ;
     public RawImage imageraw;
     public float upper_limit = 1.0f; 
 
@@ -26,6 +27,7 @@ public class PogressBar : MonoBehaviour
         //buttonState = ButtonState.Inactive;
         imageraw.material = new Material(shader);
         imageraw.material.SetFloat("_frequency", Frequency);
+        _chargeSpeed = 1.0f/progressBarTimelimit;
     }
 
     // Update is called once per frame
@@ -84,7 +86,7 @@ public class PogressBar : MonoBehaviour
         else if(current > upper_limit && upper_limit != 1 )
         {
             timer_hover += Time.deltaTime;
-            if (timer_hover > 2.0f)
+            if (timer_hover > progressBarTimelimit )
             {
                 buttonState = ButtonState.Idle;
             }
