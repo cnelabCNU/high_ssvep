@@ -33,6 +33,7 @@ public class OnlineFindDiff : MonoBehaviour
     private bool training = false;
     private bool trained = false;
     public bool isStimuliActive = false;
+    public bool activateFeedback = true;
 
     private static Random rng = new Random();
     private List<int> stimuliIdx;
@@ -170,6 +171,7 @@ public class OnlineFindDiff : MonoBehaviour
     {
         activateStimuli(false);
         stimuli_reference.SetActive(false);
+        UIButtons.active = false;
         logger = new CsvLog(description);
         logger.writeLine("start");
         myText.text = $"Start training! {description}" ; // Test 
@@ -227,7 +229,7 @@ public class OnlineFindDiff : MonoBehaviour
             switch (backendController.buttonState)
             {
                 case ButtonState.Inactive:
-                    yield return new WaitForSeconds(2.0f);
+                    yield return new WaitForSeconds(1.0f);
                     backendController.buttonState = ButtonState.Idle;
                     break;
                 case ButtonState.Idle:
@@ -235,11 +237,17 @@ public class OnlineFindDiff : MonoBehaviour
                     activateStimuli(true);
                     break;
                 case ButtonState.Hover:
-                    stimulis[freq_stimuliidx[backendController.stimuliFrequency]].GetComponent<PogressBar>().buttonState = ButtonState.Hover; 
+                    if (activateFeedback)
+                    {
+                        stimulis[freq_stimuliidx[backendController.stimuliFrequency]].GetComponent<PogressBar>().buttonState = ButtonState.Hover;
+                    }
                     break;
                 case ButtonState.Cancel:
-                    stimulis[freq_stimuliidx[backendController.stimuliFrequency]].GetComponent<PogressBar>().buttonState = ButtonState.Cancel;
-                    backendController.buttonState = ButtonState.Inactive;
+                    if (activateFeedback)
+                    {
+                        stimulis[freq_stimuliidx[backendController.stimuliFrequency]].GetComponent<PogressBar>().buttonState = ButtonState.Cancel;
+                        backendController.buttonState = ButtonState.Inactive;
+                    }
                     break;
                 case ButtonState.Selection:
                     stimuliFlag = false;
