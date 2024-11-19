@@ -246,8 +246,9 @@ public class OnlineFindDiff : MonoBehaviour
                     if (activateFeedback)
                     {
                         stimulis[freq_stimuliidx[backendController.stimuliFrequency]].GetComponent<PogressBar>().buttonState = ButtonState.Cancel;
-                        backendController.buttonState = ButtonState.Inactive;
+                        
                     }
+                    backendController.buttonState = ButtonState.Inactive;
                     break;
                 case ButtonState.Selection:
                     stimuliFlag = false;
