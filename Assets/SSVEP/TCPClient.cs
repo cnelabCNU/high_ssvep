@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -11,7 +12,8 @@ public class BackendController : MonoBehaviour
 {
     private TcpClient socketConnection;
     private Thread clientReceiveThread;
-    private bool isConnected = false;
+    public bool isConnected = false;
+    public GameObject statusServer; 
 
     public string serverIP = "127.0.0.1";
     public int serverPort = 887;
@@ -34,8 +36,27 @@ public class BackendController : MonoBehaviour
     void Start()
     {
         ConnectToServer();
-        StartCoroutine(TryReconnect());
+        //StartCoroutine(TryReconnect());
        
+    }
+
+    void Update()
+    {
+        switch (currentState)
+        {
+            case ConnectionState.Disconnected:
+                statusServer.GetComponent<Image>().color = new Color(255,0,0);
+                break;
+            case ConnectionState.Connecting:
+                statusServer.GetComponent<Image>().color = new Color(255, 0, 255);
+                break;
+            case ConnectionState.Connected:
+                statusServer.GetComponent<Image>().color = new Color(0, 255, 0);
+                break;
+            case ConnectionState.Error:
+                statusServer.GetComponent<Image>().color = new Color(255, 255, 0);
+                break;
+        }
     }
 
     void OnDestroy()
@@ -43,16 +64,13 @@ public class BackendController : MonoBehaviour
         DisconnectFromServer();
     }
 
-    private IEnumerator TryReconnect()
+    public IEnumerator TryConnect()
     {
-        while (true)
+        if (currentState != ConnectionState.Connected)
         {
-            if (currentState != ConnectionState.Connected)
-            {
-                ConnectToServer();
-            }
-            yield return new WaitForSeconds(5f); // Try every 5 seconds
+            ConnectToServer();
         }
+        yield return new WaitForSeconds(5f); // Try every 5 seconds
     }
 
     private void ConnectToServer()
@@ -151,6 +169,12 @@ public class BackendController : MonoBehaviour
             Debug.LogError($"Error processing JSON data: {e.Message}");
         }
         //});
+    }
+
+    public void ReconnectFromServer()
+    {
+        DisconnectFromServer();
+        ConnectToServer();
     }
 
     public void DisconnectFromServer()

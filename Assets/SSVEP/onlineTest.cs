@@ -45,6 +45,8 @@ public class OnlineTest : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        backendController = GetComponentInParent<BackendController>();
+
         filePaths = Directory.GetFiles(Path.Combine(Application.persistentDataPath, "netflix_posters"), "*.jpg",
                                          SearchOption.TopDirectoryOnly);
         stimuliIdx = Enumerable.Range(0, stimulis.Length).ToList();

@@ -20,7 +20,7 @@ public class OnlineFindDiff : MonoBehaviour
     public GameObject stimuli_reference;
     public Dictionary<String, int> freq_stimuliidx = new Dictionary<String, int>();
 
-    public BackendController backendController; 
+    private BackendController backendController; 
     public TextMeshProUGUI myText;
     public AudioSource BeepSound;
 
@@ -34,6 +34,7 @@ public class OnlineFindDiff : MonoBehaviour
     private bool trained = false;
     public bool isStimuliActive = false;
     public bool activateFeedback = true;
+    private int randomImageCount = 0;
 
     private static Random rng = new Random();
     private List<int> stimuliIdx;
@@ -48,6 +49,7 @@ public class OnlineFindDiff : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        backendController = GetComponentInParent<BackendController>();
         filePaths = Directory.GetFiles(Path.Combine(Application.persistentDataPath, "netflix_posters_genai"), "*.jpg",
                                          SearchOption.TopDirectoryOnly);
 
@@ -85,7 +87,7 @@ public class OnlineFindDiff : MonoBehaviour
 
     void getRandomImagesGenAI(int idx = 0, int sample = 0)
     {
-        string filepath = filePaths[idx + sample*numberSamples ];
+        string filepath = filePaths[randomImageCount];
         string directoryName = Path.GetFileNameWithoutExtension(filepath);
 
         var filePathsGenAI = Directory.GetFiles(Path.Combine(Application.persistentDataPath, "netflix_posters_genai", directoryName), "*.jpg",
@@ -98,6 +100,7 @@ public class OnlineFindDiff : MonoBehaviour
             stimulis[i].GetComponent<RawImage>().texture = LoadImage(shuffledIdx[i]);
         }
         stimulis[idx].GetComponent<RawImage>().texture = LoadImage(filepath);
+        randomImageCount += 1;
     }
 
     void getSpotDifference(int stimuliId )
@@ -139,7 +142,6 @@ public class OnlineFindDiff : MonoBehaviour
         if (training && (OVRInput.GetDown(OVRInput.Button.Two) || Input.GetKeyDown("b")))
         {
             myText.text = "Stopped\nPress button (A) to restart the trainig!";
-            activateStimuli(false);
             stimuli_reference.SetActive(false);
             StopCoroutine("MySequence");
             training = false;
@@ -151,9 +153,15 @@ public class OnlineFindDiff : MonoBehaviour
             myText.text = "Press button (A) to restart the trainig!";
             trained = false;
         }
+        if (training && (Input.GetKeyDown("s")))
+        {
 
-       // if (Input.GetKeyDown("c"))
-       // {
+            logger.saveFile();
+
+        }
+
+        // if (Input.GetKeyDown("c"))
+        // {
         //    filePaths = filePaths.OrderBy(a => rng.Next()).ToArray();
         //    getRandomImagesGenAI();
         //}
@@ -169,6 +177,8 @@ public class OnlineFindDiff : MonoBehaviour
 
     IEnumerator MySequence()
     {
+        filePaths = filePaths.OrderBy(a => rng.Next()).ToArray();
+        getRandomImagesGenAI(0, 0);
         activateStimuli(false);
         stimuli_reference.SetActive(false);
         UIButtons.active = false;
@@ -223,7 +233,8 @@ public class OnlineFindDiff : MonoBehaviour
         logger.writeColumn(string.Format("start_{0}", idx));
 
         //while (!Input.GetKeyDown("a") && !OVRInput.GetDown(OVRInput.Button.One))
-        bool stimuliFlag = true; 
+        bool stimuliFlag = true;
+        backendController.buttonState = ButtonState.Inactive;
         while (stimuliFlag)  // Wait until trigger 
         {
             switch (backendController.buttonState)
