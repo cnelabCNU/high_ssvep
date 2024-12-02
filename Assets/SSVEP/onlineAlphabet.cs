@@ -50,23 +50,17 @@ public class OnlineAlphabet : MonoBehaviour
 
     private List<string> similarCharacterPairs = new List<string>
     {
-        "1I", "1l", "1L", "I1", "lI",
-        "0O", "O0", "Q0", "OQ", "0Q",
+        "1I", "Q0", "0O", "B8",
         "5S", "5Z", "S5", "S8", "Z2",
-        "2Z", "ZS", "S2", "B8", "8B",
-        "8S", "B5", "6G", "G9", "G6",
-        "6B", "B6", "9G", "G9", "9S",
+        "8S", "B5", "FP", "CD", "G6",
+        "6B", "B6", "9G", "HN", "MN",
         "C0", "0C", "D0", "0D", "D6",
-        "P1", "P7", "P0", "P4", "P3",
-        "H4", "H1", "N1", "M1", "N0",
-        "V1", "V7", "W1", "W7", "X1",
-        "I1", "L1", "0O", "O8", "O9",
-        "C6", "C9", "O9", "U1", "V0",
-        "M1", "N1", "A4", "B6", "8B",
-        "Z9", "Z0", "3E", "E3", "E8",
-        "E9", "Z8", "C9", "R1", "R7",
-        "T7", "T1", "V9", "V3", "VV",
-        "V8", "W8", "W3"
+        "LI", "L1", "KX", "KL", "KR",
+        "RP", "TL", "SZ", "TY", "VU",
+        "83", "69", "17", "27", "56",
+        "94", "89", "QO", "E3", "WV",
+        "WU", "T7", "Y1", "OP", "A4",
+        "FA", "H4", "23"
     };
 
 
@@ -117,7 +111,7 @@ public class OnlineAlphabet : MonoBehaviour
 
         for (var i = 0; i < stimulis.Length; i++)
         {
-            int referenceCount = random.Next(1, 13);
+            int referenceCount = random.Next(5, 13);
             var charArray = new char[95];
 
             for (int j = 0; j < referenceCount; j++)
