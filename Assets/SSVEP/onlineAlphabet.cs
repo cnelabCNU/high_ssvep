@@ -177,6 +177,18 @@ public class OnlineAlphabet : MonoBehaviour
             trained = false;
         }
 
+        if (training && (Input.GetKeyDown("s")))
+        {
+
+            logger.saveFile();
+
+        }
+
+        if (Input.GetKeyDown("c"))
+        {
+            getRandomCharacterPairs();
+        }
+
     }
 
     public void setButtonsState(ButtonState buttonState)

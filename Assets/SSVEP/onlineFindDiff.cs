@@ -160,11 +160,11 @@ public class OnlineFindDiff : MonoBehaviour
 
         }
 
-        // if (Input.GetKeyDown("c"))
-        // {
-        //    filePaths = filePaths.OrderBy(a => rng.Next()).ToArray();
-        //    getRandomImagesGenAI();
-        //}
+        if (Input.GetKeyDown("c"))
+        {
+            filePaths = filePaths.OrderBy(a => rng.Next()).ToArray();
+            getRandomImagesGenAI();
+        }
     }
 
     public void setButtonsState(ButtonState buttonState)
